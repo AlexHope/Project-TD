@@ -49,8 +49,11 @@ namespace Pathfinding
         /// <param name="startPosition">The start position to begin the path from</param>
         /// <param name="endPosition">The end position</param>
         /// <returns>The shortest path from start to end</returns>
-        public List<PF_Node> CalculatePath(Vector2 startPosition, Vector2 endPosition)
+        public Stack<PF_Node> CalculatePath(Vector2 startPosition, Vector2 endPosition)
         {
+            // If we're already at the end position, no need to calculate anything
+            if (endPosition == startPosition) return null;
+
             // Determine the start/end nodes
             PF_Node startNode = grid.GetNodeFromWorldPosition(startPosition);
             PF_Node endNode = grid.GetNodeFromWorldPosition(endPosition);
@@ -120,7 +123,7 @@ namespace Pathfinding
         /// <param name="startNode">The start node to begin the path from</param>
         /// <param name="endNode">The end node</param>
         /// <returns>The shortest path from start to end</returns>
-        public List<PF_Node> CalculatePath(Transform startPosition, Transform endPosition)
+        public Stack<PF_Node> CalculatePath(Transform startPosition, Transform endPosition)
         {
             return CalculatePath(startPosition.position, endPosition.position);
         }
@@ -130,21 +133,18 @@ namespace Pathfinding
         /// </summary>
         /// <param name="startNode">The starting node to begin the path from</param>
         /// <param name="endNode">The end node of the path</param>
-        /// <returns></returns>
-        private List<PF_Node> CreatePath(PF_Node startNode, PF_Node endNode)
+        /// <returns>A stack of the current path</returns>
+        private Stack<PF_Node> CreatePath(PF_Node startNode, PF_Node endNode)
         {
-            List<PF_Node> path = new List<PF_Node>();
+            Stack<PF_Node> path = new Stack<PF_Node>();
             PF_Node currentNode = endNode;
 
             // Traverse back through the nodes, starting from the end node
             while (currentNode != startNode)
             {
-                path.Add(currentNode);
+                path.Push(currentNode);
                 currentNode = currentNode.Parent;
             }
-
-            // If we've determined a path, reverse it to get the start to end node path
-            if (path.Count != 0) path.Reverse();
 
             return path;
         }

@@ -33,6 +33,7 @@ namespace Pathfinding
         // Accessors
         public PF_Node[,] Nodes { get; private set; }
         public Vector2Int Size { get; private set; }
+        public float NodeRadius { get { return nodeRadius; } }
 
         /// <summary>
         /// Assigns the static instance
@@ -108,7 +109,7 @@ namespace Pathfinding
                     Vector3 nodeWorldPosition = new Vector3(x + nodeRadius, y + nodeRadius, 0) * nodeDiameter;
 
                     // Determine if we're an impassable node or not
-                    bool isImpassable = Physics2D.OverlapCircle(nodeWorldPosition, nodeRadius, impassableLayers);
+                    bool isImpassable = Physics2D.OverlapCircle(nodeWorldPosition, nodeRadius - 0.05f, impassableLayers);
                     PF_Node.NodeType nodeType = (isImpassable) ? PF_Node.NodeType.Impassable : PF_Node.NodeType.Normal;
 
                     // Add the node to the grid

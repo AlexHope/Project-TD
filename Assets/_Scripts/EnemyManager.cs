@@ -5,18 +5,31 @@ Created by Alex Hope. For use in the Project-TD app.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class EnemyManager : MonoBehaviour
 {
-	// Use this for initialization
-	private void Start()
+    public static EnemyManager Instance { get; private set; }
+
+    [SerializeField] private Transform defaultTarget;
+    
+    public Transform EnemyTarget { get { return defaultTarget; } }
+    public List<Enemy> ActiveEnemies { get; set; }
+
+    /// <summary>
+    /// Assigns the static instance
+    /// </summary>
+    private void Awake()
     {
-		
-	}
-	
-	// Update is called once per frame
-	private void Update()
+        Instance = this;
+        ActiveEnemies = new List<Enemy>();
+    }
+
+    /// <summary>
+    /// Runs logic every frame to control the enemies
+    /// </summary>
+    private void LateUpdate()
     {
-		
-	}
+
+    }
 }
