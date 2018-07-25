@@ -35,7 +35,7 @@ public class Spawner : Entity
     /// </summary>
     private IEnumerator SpawnResolver()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(1.0f);
         while (Application.isPlaying)
         {
             for (int i = 0; i < entityPrefabs.Length; i++)

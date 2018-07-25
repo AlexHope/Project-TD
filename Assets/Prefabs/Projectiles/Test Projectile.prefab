@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4827269009806926}
   - component: {fileID: 212508986566057464}
   - component: {fileID: 114172823498125954}
-  - component: {fileID: 70035566441173818}
   - component: {fileID: 50363514183138418}
+  - component: {fileID: 58817800465199414}
   m_Layer: 0
   m_Name: Test Projectile
   m_TagString: Untagged
@@ -38,7 +38,7 @@ Transform:
   m_GameObject: {fileID: 1042244471285456}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 8, y: 8, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -63,8 +63,8 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &70035566441173818
-CapsuleCollider2D:
+--- !u!58 &58817800465199414
+CircleCollider2D:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -76,8 +76,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.05, y: 0.05}
-  m_Direction: 0
+  serializedVersion: 2
+  m_Radius: 0.03
 --- !u!114 &114172823498125954
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseDamage: 10
-  baseSpeed: 0.7
+  baseSpeed: 0.2
 --- !u!212 &212508986566057464
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -125,7 +125,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 2294e156357648640ac971272f746cfe, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

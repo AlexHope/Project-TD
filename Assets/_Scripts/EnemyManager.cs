@@ -11,9 +11,8 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance { get; private set; }
 
-    [SerializeField] private Transform defaultTarget;
+    public EnemyGoal EnemyGoal;
     
-    public Transform EnemyTarget { get { return defaultTarget; } }
     public List<Enemy> ActiveEnemies { get; set; }
 
     /// <summary>

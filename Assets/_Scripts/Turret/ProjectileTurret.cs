@@ -11,6 +11,8 @@ public class ProjectileTurret : Turret
 {
     [Header("Projectile Turret")]
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float projectileDamage = 1.0f;
+    [SerializeField] private float projectileSpeed = 1.0f;
 
     public List<GameObject> ActiveProjectiles { get; set; }
 
@@ -33,6 +35,8 @@ public class ProjectileTurret : Turret
         Projectile proj = GameObject.Instantiate(projectilePrefab, transform.position, transform.rotation, transform).GetComponent<Projectile>();
         proj.Owner = this;
         proj.Target = target;
+        proj.BaseDamage = projectileDamage;
+        proj.BaseSpeed = projectileSpeed;
 
         // Add it to the list of active projectiles
         ActiveProjectiles.Add(proj.gameObject);

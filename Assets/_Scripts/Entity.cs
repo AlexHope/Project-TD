@@ -11,6 +11,7 @@ using UnityEngine.Events;
 /// <summary>
 /// This is the base class for all entities
 /// </summary>
+[RequireComponent(typeof(SpriteRenderer))]
 public abstract class Entity : MonoBehaviour
 {
     // Events
@@ -18,7 +19,7 @@ public abstract class Entity : MonoBehaviour
     protected static event OnEntityDestroyedEvent OnEntityDestroyed;
 
     [Header("Base Entity")]
-    public string Name = "";
+    public string DisplayName = "";
     public float Health = 100.0f;
 
     protected Guid entityID = Guid.NewGuid();
@@ -27,11 +28,12 @@ public abstract class Entity : MonoBehaviour
     // Accessors
     public bool IsActive { get; set; }
     public Guid EntityID { get { return entityID; } }
+    public float TotalLifetime { get; private set; }
 
-	/// <summary>
+    /// <summary>
     /// Assigns references
     /// </summary>
-	protected virtual void Start()
+    protected virtual void Start()
     {
         IsActive = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -50,7 +52,7 @@ public abstract class Entity : MonoBehaviour
     /// </summary>
     protected virtual void Update()
     {
-        
+        TotalLifetime += Time.deltaTime;
     }
 
     /// <summary>

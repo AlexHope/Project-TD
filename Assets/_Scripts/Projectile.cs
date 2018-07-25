@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float baseDamage = 100.0f;
-    [SerializeField] private float baseSpeed = 1.0f;
-
-    public float BaseDamage { get { return baseDamage; } }
-    public float BaseSpeed { get { return baseSpeed; } }
+    public float BaseDamage { get; set; }
+    public float BaseSpeed { get; set; }
     public Entity Owner { get; set; }
     public Entity Target { get; set; }
 
@@ -19,7 +16,7 @@ public class Projectile : MonoBehaviour
     {
 		if (Target)
         {
-            transform.position = Vector2.MoveTowards(transform.position, Target.transform.position, 1.0f * baseSpeed);
+            transform.position = Vector2.MoveTowards(transform.position, Target.transform.position, 1.0f * BaseSpeed);
         }
         else
         {
@@ -33,7 +30,7 @@ public class Projectile : MonoBehaviour
     /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.gameObject == Target.gameObject)
+        if (Target && collision.collider.gameObject == Target.gameObject)
         {
             ApplyDamage(Target);
             Destroy(gameObject);
@@ -46,7 +43,15 @@ public class Projectile : MonoBehaviour
     /// <param name="target">The target to damage</param>
     private void ApplyDamage(Entity target)
     {
-        target.Health -= baseDamage;
+        target.Health -= BaseDamage;
+        if (target.Health <= 0.0f)
+        {
+            // If this projectile was fired by a turret, increment the turret's kills
+            if (Owner is Turret)
+            {
+                (Owner as Turret).TotalKills++;
+            }
+        }
     }
 
     /// <summary>

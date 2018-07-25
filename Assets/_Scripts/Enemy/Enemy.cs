@@ -20,22 +20,22 @@ public abstract class Enemy : Entity
     [Header("Enemy")]
     [SerializeField] protected EnemySize size;
     [SerializeField] protected float movementSpeed = 1.0f;
+    [SerializeField] protected float damage = 10.0f;
 
     [Header("Pathfinding")]
     [SerializeField] protected float pathCheckRate = 1.0f;
-    protected Transform target;
+    protected EnemyGoal target;
     private Stack<PF_Node> currentPath = new Stack<PF_Node>();
-
-    private int totalLifetime;
 
     /// <summary>
     /// Finds the target and starts the path resolver
     /// </summary>
     protected override void OnEnable()
     {
+        base.OnEnable();
         if (EnemyManager.Instance)
         {
-            target = EnemyManager.Instance.EnemyTarget;
+            target = EnemyManager.Instance.EnemyGoal;
         }
 
         StartCoroutine(PathResolver());
@@ -46,6 +46,7 @@ public abstract class Enemy : Entity
     /// </summary>
 	protected override void Update()
     {
+        base.Update();
         if (IsActive)
         {
             PerformPathfinding();
@@ -57,6 +58,7 @@ public abstract class Enemy : Entity
     /// </summary>
     protected override void LateUpdate()
     {
+        base.LateUpdate();
         if (Health <= 0.0f)
         {
             Destroy(gameObject);
@@ -69,10 +71,26 @@ public abstract class Enemy : Entity
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
         if (EnemyManager.Instance && EnemyManager.Instance.ActiveEnemies.Contains(this))
         {
             EnemyManager.Instance.ActiveEnemies.Remove(this);
+        }
+    }
+
+    /// <summary>
+    /// Used to check if we've hit our goal
+    /// </summary>
+    /// <param name="collision">The collision</param>
+    protected void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Determine if we've hit our target
+        if (collision.collider.transform == target.transform)
+        {
+            // Damage the target
+            target.Health -= damage;
+
+            // Destroy this enemy by setting its health to 0
+            Health = 0.0f;
         }
     }
 
@@ -93,6 +111,9 @@ public abstract class Enemy : Entity
                     if (Vector2.Distance(transform.position, currentPath.Peek().WorldPosition) < PF_Grid.Instance.NodeRadius)
                     {
                         currentPath.Pop();
+
+                        // If we have no more path to reach our target, we can't move to the next node so leave early
+                        if (currentPath.Count == 0) return;
                     }
 
                     // Move towards the next node in the path
@@ -103,10 +124,10 @@ public abstract class Enemy : Entity
                     Debug.LogWarning(entityID + " failed to perform pathfinding: " + e.Message);
                 }
             }
-            // Otherwise destroy this
+            // Otherwise destroy this by setting its health to 0
             else
             {
-                Destroy(gameObject);
+                Health = 0.0f;
             }
         }
     }
@@ -116,7 +137,10 @@ public abstract class Enemy : Entity
     /// </summary>
     private IEnumerator PathResolver()
     {
-        currentPath = PF_Pathfinder.Instance.CalculatePath(transform, target);
-        yield return new WaitForSeconds(pathCheckRate);
+        while(Application.isPlaying)
+        {
+            currentPath = PF_Pathfinder.Instance.CalculatePath(transform, target.transform);
+            yield return new WaitForSeconds(pathCheckRate);
+        }
     }
 }

@@ -27,11 +27,11 @@ public abstract class Turret : Entity
     [SerializeField] protected int maximumTargets = 1;
 
     protected List<Entity> targets = new List<Entity>();
-    protected float totalLifetime = 0.0f;
-    protected int totalKills = 0;
 
     protected abstract void Attack(Entity target);
     protected abstract void UpdateAttack();
+
+    public int TotalKills { get; set; }
 
     /// <summary>
     /// Assigns event listeners and starts the attack resolver
@@ -52,8 +52,6 @@ public abstract class Turret : Entity
     {
         base.Update();
         UpdateAttack();
-
-        totalLifetime += Time.deltaTime;
     }
 
     /// <summary>
@@ -65,7 +63,6 @@ public abstract class Turret : Entity
         if (targets.Contains(destroyedEntity))
         {
             targets.Remove(destroyedEntity);
-            totalKills++;
         }
     }
 
@@ -77,13 +74,23 @@ public abstract class Turret : Entity
     {
         while (Application.isPlaying)
         {
-            ScanForEnemies();
+            // Only scan for new targets if we are capable of finding a new target
+            if (targets.Count < maximumTargets)
+            {
+                ScanForEnemies();
+            }
 
             // If we have any valid targets, fire at them
             if (targets.Count > 0)
             {
                 for (int i = 0; i < targets.Count; i++)
                 {
+                    // Determine if any of our current targets are out of range and re-assign them if they are
+                    if (!targets[i] || Vector2.Distance(transform.position, targets[i].transform.position) > range)
+                    {
+                        targets[i] = FindClosestTarget();
+                    }
+
                     Attack(targets[i]);
                 }
                 yield return new WaitForSeconds(fireRate);
@@ -98,21 +105,43 @@ public abstract class Turret : Entity
     /// </summary>
     private void ScanForEnemies()
     {
-        // Check which active enemies are in range
+        for (int i = 0; i < (maximumTargets - targets.Count); i++)
+        {
+            Entity closestTarget = FindClosestTarget();
+            if (closestTarget)
+            {
+                targets.Add(closestTarget);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds the closest target within range of this turret
+    /// </summary>
+    /// <returns>The closest turret</returns>
+    private Entity FindClosestTarget()
+    {
+        Entity closestTarget = null;
+
         if (EnemyManager.Instance)
         {
-            targets.Clear();
+            float closestDistance = 9999.0f;
+
+            // Check the active enemies
             for (int i = 0; i < EnemyManager.Instance.ActiveEnemies.Count; i++)
             {
-                // If we have enough targets, we don't need to keep checking
-                if (targets.Count >= maximumTargets) break;
+                // Determine the distance to the enemy
+                float distanceToTarget = Vector2.Distance(transform.position, EnemyManager.Instance.ActiveEnemies[i].transform.position);
 
-                // If the enemy is in range, add them to the list of targets
-                if (Vector2.Distance(EnemyManager.Instance.ActiveEnemies[i].transform.position, transform.position) < range)
+                // If it's within range and closer than the previous closest entity, it is now the new closest target
+                if (distanceToTarget < range && distanceToTarget < closestDistance && !targets.Contains(EnemyManager.Instance.ActiveEnemies[i]))
                 {
-                    targets.Add(EnemyManager.Instance.ActiveEnemies[i]);
+                    closestDistance = distanceToTarget;
+                    closestTarget = EnemyManager.Instance.ActiveEnemies[i];
                 }
             }
         }
+
+        return closestTarget;
     }
 }
