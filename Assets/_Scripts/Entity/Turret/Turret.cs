@@ -31,7 +31,7 @@ public abstract class Turret : Entity
     protected abstract void Attack(Entity target);
     protected abstract void UpdateAttack();
 
-    public int TotalKills { get; set; }
+    public int TotalKills { get; private set; }
 
     /// <summary>
     /// Assigns event listeners and starts the attack resolver
@@ -39,7 +39,7 @@ public abstract class Turret : Entity
     protected override void OnEnable()
     {
         // Listen to entity destruction events in case they were one of our targets
-        OnEntityDestroyed += Turret_OnEntityDestroyed;
+        OnEntityDestroyed += Entity_OnEntityDestroyed;
 
         // Start the attack resolver
         StartCoroutine(ResolveAttacks());
@@ -58,11 +58,23 @@ public abstract class Turret : Entity
     /// Removes the destroyed entity from the target list if it contains it
     /// </summary>
     /// <param name="destroyedEntity">The destroyed entity</param>
-    protected virtual void Turret_OnEntityDestroyed(Entity destroyedEntity)
+    protected virtual void Entity_OnEntityDestroyed(Entity destroyedEntity)
     {
         if (targets.Contains(destroyedEntity))
         {
             targets.Remove(destroyedEntity);
+        }
+    }
+
+    /// <summary>
+    /// Run when this turret kills a target
+    /// </summary>
+    public void DestroyedTarget(Entity enemy)
+    {
+        if (enemy is Enemy)
+        {
+            TotalKills++;
+            PlayerManager.Instance.CurrentGold += (enemy as Enemy).GoldReward;
         }
     }
 

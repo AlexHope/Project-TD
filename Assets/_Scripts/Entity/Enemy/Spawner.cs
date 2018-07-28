@@ -10,6 +10,12 @@ using UnityEngine;
 public class Spawner : Entity
 {
     [Serializable]
+    public class Wave
+    {
+        public EntityPrefab[] entities;
+    }
+
+    [Serializable]
     public class EntityPrefab
     {
         public Enemy Prefab;
@@ -17,37 +23,48 @@ public class Spawner : Entity
     }
 
     [Header("Spawner")]
-    [SerializeField] private EntityPrefab[] entityPrefabs;
+    [SerializeField] private Wave[] waves;
     [SerializeField] private float spawnDelay = 0.5f;
+    [SerializeField] private int waveToRepeat = -1;
 
-	/// <summary>
+    /// <summary>
     /// Starts the spawn resolver
     /// </summary>
-	protected override void OnEnable()
+    protected override void Start()
     {
-        base.OnEnable();
-        StartCoroutine(SpawnResolver());
+        base.Start();
+        EnemyManager.OnWaveStart += EnemyManager_OnWaveStart;
 	}
+
+    /// <summary>
+    /// Starts the spawning of a new wave
+    /// </summary>
+    private void EnemyManager_OnWaveStart(int waveNumber)
+    {
+        // If we're forcibly setting the wave number, use that instead of the one passed in
+        if (waveToRepeat != -1)
+        {
+            waveNumber = waveToRepeat;
+        }
+
+        // Start spawning the wave
+        StartCoroutine(StartWave(waveNumber));
+    }
 
     /// <summary>
     /// Spawns enemies after the specified delay
     /// </summary>
-    private IEnumerator SpawnResolver()
+    private IEnumerator StartWave(int waveNumber)
     {
-        yield return new WaitForSeconds(1.0f);
-        while (Application.isPlaying)
-        {
-            for (int i = 0; i < entityPrefabs.Length; i++)
-            {
-                for (int j = 0; j < entityPrefabs[i].NumberToSpawn; j++)
-                {
-                    SpawnEntity(entityPrefabs[i]);
-                    yield return new WaitForSeconds(spawnDelay);
-                }
-            }
+        // TODO: Modify this to spawn enemies randomly
 
-            yield return new WaitUntil(() => EnemyManager.Instance.ActiveEnemies.Count == 0);
-            yield return new WaitForSeconds(EnemyManager.Instance.WaveTimer);
+        for (int i = 0; i < waves[waveNumber].entities.Length; i++)
+        {
+            for (int j = 0; j < waves[waveNumber].entities[i].NumberToSpawn; j++)
+            {
+                SpawnEntity(waves[waveNumber].entities[i]);
+                yield return new WaitForSeconds(spawnDelay);
+            }
         }
     }
 
@@ -65,13 +82,21 @@ public class Spawner : Entity
     /// A simple function that returns the total number of enemies this spawner will spawn per wave
     /// </summary>
     /// <returns>The total number of enemies spawned per wave by this spawner</returns>
-    public int TotalEnemiesToSpawnPerWave()
+    public int TotalEnemiesToSpawn()
     {
         int totalEnemies = 0;
 
-        for (int i = 0; i < entityPrefabs.Length; i++)
+        // Determine the wave number to use
+        int currentWave = EnemyManager.Instance.WaveNumber;
+        if (waveToRepeat != -1)
         {
-            totalEnemies += entityPrefabs[i].NumberToSpawn;
+            currentWave = waveToRepeat;
+        }
+
+        // Tally up the number of enemies per entity prefab
+        for (int i = 0; i < waves[currentWave].entities.Length; i++)
+        {
+            totalEnemies += waves[currentWave].entities[i].NumberToSpawn;
         }
 
         return totalEnemies;

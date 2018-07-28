@@ -28,6 +28,8 @@ public abstract class Enemy : Entity
     protected EnemyGoal target;
     private Stack<PF_Node> currentPath = new Stack<PF_Node>();
 
+    public int GoldReward { get { return goldReward; } }
+
     /// <summary>
     /// Finds the target and starts the path resolver
     /// </summary>
@@ -63,18 +65,6 @@ public abstract class Enemy : Entity
         if (Health <= 0.0f)
         {
             Destroy(gameObject);
-        }
-    }
-
-    /// <summary>
-    /// Removes this entity from the list of active enemies on destroy
-    /// </summary>
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        if (EnemyManager.Instance && EnemyManager.Instance.ActiveEnemies.Contains(this))
-        {
-            EnemyManager.Instance.ActiveEnemies.Remove(this);
         }
     }
 

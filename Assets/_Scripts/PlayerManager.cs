@@ -8,10 +8,26 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-	// Use this for initialization
-	private void Start()
+    public static PlayerManager Instance { get; private set; }
+
+    [SerializeField] private float playerInitialHealth = 2000.0f;
+
+    public int CurrentGold { get; set; }
+    public int CurrentHealth { get; set; }
+
+    /// <summary>
+    /// Assigns the static instance and sets the current health
+    /// </summary>
+    private void Awake()
     {
-		
+        Instance = this;
+        CurrentHealth = (int)playerInitialHealth;
+    }
+
+    // Use this for initialization
+    private void Start()
+    {
+        
 	}
 	
 	// Update is called once per frame

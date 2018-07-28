@@ -24,6 +24,8 @@ public class Projectile : MonoBehaviour
         }
         else
         {
+            // If we've lost our target, we need to deal with this projectile, so for now just destroy it
+            // TODO: Make this less sudden
             Destroy(gameObject);
         }
 	}
@@ -34,8 +36,10 @@ public class Projectile : MonoBehaviour
     /// <param name="collision">The collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Determine if we've hit our target
         if (Target && collision.collider.gameObject == Target.gameObject)
         {
+            // If we have, apply the damage and destroy this projectile
             ApplyDamage(Target);
             Destroy(gameObject);
         }
@@ -47,13 +51,17 @@ public class Projectile : MonoBehaviour
     /// <param name="target">The target to damage</param>
     private void ApplyDamage(Entity target)
     {
+        // If target was already at 0 health, ignore this call
+        if (target.Health <= 0.0f) return;
+
+        // Damage the target
         target.Health -= BaseDamage;
         if (target.Health <= 0.0f)
         {
-            // If this projectile was fired by a turret, increment the turret's kills
+            // If this projectile was fired by a turret, inform the turret they have killed their target
             if (Owner is Turret)
             {
-                (Owner as Turret).TotalKills++;
+                (Owner as Turret).DestroyedTarget(target);
             }
         }
     }

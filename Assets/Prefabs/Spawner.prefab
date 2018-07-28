@@ -54,11 +54,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DisplayName: Spawner
   Health: 100
-  entityPrefabs:
-  - Prefab: {fileID: 114529302550420562, guid: f78dc5eb296b505449b01deb130c4ddb, type: 2}
-    NumberToSpawn: 120
-  waveDelay: 60
+  waves:
+  - entities:
+    - Prefab: {fileID: 114529302550420562, guid: f78dc5eb296b505449b01deb130c4ddb,
+        type: 2}
+      NumberToSpawn: 20
   spawnDelay: 0.25
+  waveToRepeat: 0
 --- !u!212 &212147224758914584
 SpriteRenderer:
   m_ObjectHideFlags: 1

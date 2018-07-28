@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UserInterfaceController : MonoBehaviour
 {
@@ -20,6 +21,10 @@ public class UserInterfaceController : MonoBehaviour
 
     [Header("Statistics")]
     [SerializeField] private RectTransform statisticsPanel;
+    [SerializeField] private TextMeshProUGUI goldText;
+    [SerializeField] private TextMeshProUGUI enemiesRemainingText;
+    [SerializeField] private TextMeshProUGUI healthText;
+    [SerializeField] private TextMeshProUGUI waveNumberText;
 
     [Header("Turret Panel")]
     [SerializeField] private RectTransform turretPanel;
@@ -34,7 +39,8 @@ public class UserInterfaceController : MonoBehaviour
     [SerializeField] private RectTransform optionsPanel;
 
     [Header("Miscellaneous")]
-    [SerializeField] private GameObject waveTimerText;
+    [SerializeField] private GameObject waveTimer;
+    [SerializeField] private TextMeshProUGUI waveTimerText;
 
     public Canvas OverlayCanvas { get { return overlayCanvas; } }
 
@@ -47,18 +53,31 @@ public class UserInterfaceController : MonoBehaviour
     }
 
     /// <summary>
-    /// Ensures panel states are correctly set on start
+    /// Ensures panel states are correctly set on start, and assigns listeners
     /// </summary>
     private void Start()
     {
+        // Listen to the wave ending event
+        EnemyManager.OnWaveEnd += EnemyManager_OnWaveEnd;
+
+        // Set initial panel states
         mainPanel.gameObject.SetActive(true);
         statisticsPanel.gameObject.SetActive(true);
-
         blurFilter.gameObject.SetActive(false);
         turretPanel.gameObject.SetActive(false);
         upgradesPanel.gameObject.SetActive(false);
         otherPanel.gameObject.SetActive(false);
         optionsPanel.gameObject.SetActive(false);
+        waveTimer.gameObject.SetActive(false);
+
+    }
+
+    /// <summary>
+    /// Run every frame to update UI elements
+    /// </summary>
+    private void Update()
+    {
+        UpdateStatisticsText();
     }
 
     /// <summary>
@@ -85,5 +104,41 @@ public class UserInterfaceController : MonoBehaviour
     public void ApplyBlurFilter(bool state)
     {
         blurFilter.gameObject.SetActive(state);
+    }
+
+    /// <summary>
+    /// Runs various functions when a wave ends, such as showing the wave timer
+    /// </summary>
+    private void EnemyManager_OnWaveEnd(int waveNumber)
+    {
+        // Display the wave timer
+        StartCoroutine(DisplayWaveTimer());
+    }
+
+    /// <summary>
+    /// Displays & updates the wave timer
+    /// </summary>
+    private IEnumerator DisplayWaveTimer()
+    {
+        waveTimer.gameObject.SetActive(true);
+        float secondsFull = EnemyManager.Instance.WaveTimer;
+        while (!EnemyManager.Instance.IsWaveActive)
+        {
+            waveTimerText.text = "Next wave in:\n" + (int)secondsFull + " seconds";
+            secondsFull -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        waveTimer.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Updates the relevant statistics on the top of the screen
+    /// </summary>
+    private void UpdateStatisticsText()
+    {
+        goldText.text = PlayerManager.Instance.CurrentGold.ToString();
+        enemiesRemainingText.text = EnemyManager.Instance.RemainingEnemiesInWave.ToString() + "/" + EnemyManager.Instance.TotalEnemiesInWave.ToString();
+        healthText.text = PlayerManager.Instance.CurrentHealth.ToString();
+        waveNumberText.text = EnemyManager.Instance.DisplayWaveNumber.ToString();
     }
 }

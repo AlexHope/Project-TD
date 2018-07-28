@@ -27,7 +27,7 @@ public class PanelTransitioner : MonoBehaviour
     private RectTransform rectTransform;
     private Vector2 distanceToScreenEdge = new Vector2();
     private bool isTransitioning = false;
-    private bool state;
+    private bool state = true;
 
     /// <summary>
     /// Determines the distance to the edge of the screen
@@ -35,7 +35,6 @@ public class PanelTransitioner : MonoBehaviour
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-        state = initialState;
 
         // Calculate the distance to the edge of the screen
         float scaleMultiplier = UserInterfaceController.Instance.OverlayCanvas.transform.localScale.x;
@@ -63,6 +62,11 @@ public class PanelTransitioner : MonoBehaviour
                 }
             default: goto case TransitionDirection.Left;
         }
+
+        if (!initialState)
+        {
+            StartCoroutine(TransitionPanel(0.0f));
+        }
     }
 
     /// <summary>
@@ -70,14 +74,14 @@ public class PanelTransitioner : MonoBehaviour
     /// </summary>
     public void Button_StartTransition()
     {
-        StartCoroutine(TransitionPanel());
+        StartCoroutine(TransitionPanel(transitionTime));
     }
 
     /// <summary>
     /// Transitions the panel
     /// </summary>
     /// <param name="endPosition">The position to transition the panel to</param>
-    private IEnumerator TransitionPanel()
+    private IEnumerator TransitionPanel(float time)
     {
         if (!isTransitioning)
         {
@@ -86,18 +90,24 @@ public class PanelTransitioner : MonoBehaviour
             Vector2 startPosition = transform.position;
             Vector2 endPosition = startPosition + (distanceToScreenEdge * (state ? 1 : -1));
 
-            float progress = 0.0f;
-            while (progress < 1.0f)
+            if (time > 0.0f)
             {
-                // Transition the turret
-                transform.position = Vector2.Lerp(startPosition, endPosition, easingCurve.Evaluate(progress));
+                float progress = 0.0f;
+                while (progress < 1.0f)
+                {
+                    // Transition the turret
+                    transform.position = Vector2.Lerp(startPosition, endPosition, easingCurve.Evaluate(progress));
 
-                // Ensure the progress is clamped
-                progress += Time.deltaTime / transitionTime;
-                progress = Mathf.Clamp01(progress);
+                    // Ensure the progress is clamped
+                    progress += Time.deltaTime / time;
+                    progress = Mathf.Clamp01(progress);
 
-                yield return new WaitForEndOfFrame();
+                    yield return new WaitForEndOfFrame();
+                }
             }
+
+            // Forcibly snap to the end position to prevent any floating point issues
+            transform.position = endPosition;
 
             // Update the state
             state = !state;
