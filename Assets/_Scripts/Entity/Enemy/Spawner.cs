@@ -18,7 +18,6 @@ public class Spawner : Entity
 
     [Header("Spawner")]
     [SerializeField] private EntityPrefab[] entityPrefabs;
-    [SerializeField] private float waveDelay = 10.0f;
     [SerializeField] private float spawnDelay = 0.5f;
 
 	/// <summary>
@@ -47,7 +46,8 @@ public class Spawner : Entity
                 }
             }
 
-            yield return new WaitForSeconds(waveDelay);
+            yield return new WaitUntil(() => EnemyManager.Instance.ActiveEnemies.Count == 0);
+            yield return new WaitForSeconds(EnemyManager.Instance.WaveTimer);
         }
     }
 
@@ -59,5 +59,21 @@ public class Spawner : Entity
     {
         Enemy enemy = GameObject.Instantiate(entity.Prefab, transform.position, Quaternion.identity, transform);
         EnemyManager.Instance.ActiveEnemies.Add(enemy);
+    }
+
+    /// <summary>
+    /// A simple function that returns the total number of enemies this spawner will spawn per wave
+    /// </summary>
+    /// <returns>The total number of enemies spawned per wave by this spawner</returns>
+    public int TotalEnemiesToSpawnPerWave()
+    {
+        int totalEnemies = 0;
+
+        for (int i = 0; i < entityPrefabs.Length; i++)
+        {
+            totalEnemies += entityPrefabs[i].NumberToSpawn;
+        }
+
+        return totalEnemies;
     }
 }

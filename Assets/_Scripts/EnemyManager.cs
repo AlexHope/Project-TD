@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour
     public static EnemyManager Instance { get; private set; }
 
     public EnemyGoal EnemyGoal;
+    public int WaveTimer = 30;
     
     public List<Enemy> ActiveEnemies { get; set; }
 

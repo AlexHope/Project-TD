@@ -21,6 +21,7 @@ public abstract class Enemy : Entity
     [SerializeField] protected EnemySize size;
     [SerializeField] protected float movementSpeed = 1.0f;
     [SerializeField] protected float damage = 10.0f;
+    [SerializeField] protected int goldReward = 10;
 
     [Header("Pathfinding")]
     [SerializeField] protected float pathCheckRate = 1.0f;
