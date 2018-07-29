@@ -33,6 +33,7 @@ public class TransitionablePanel
     /// <summary>
     /// Starts the coroutine to transition the panel
     /// </summary>
+    /// <param name="instant">Whether the transition is instant</param>
     public void StartTransition(bool instant = false)
     {
         UserInterfaceController.Instance.StartCoroutine(TransitionElement(instant ? 0.0f : transitionTime));
@@ -41,6 +42,7 @@ public class TransitionablePanel
     /// <summary>
     /// Transitions a transitionable panel to the desired position over time
     /// </summary>
+    /// <param name="time">The transition time</param>
     private IEnumerator TransitionElement(float time)
     {
         // Only allow the transition if we are not already transitioning
@@ -83,8 +85,9 @@ public class TransitionablePanel
     }
 
     /// <summary>
-    /// Instantly completes the transition
+    /// Instantly sets the state of the panel
     /// </summary>
+    /// <param name="state">The state to set</param>
     public void SetState(bool state)
     {
         UserInterfaceController.Instance.StartCoroutine(ForceState(state));
@@ -138,6 +141,7 @@ public class UserInterfaceController : MonoBehaviour
     [SerializeField] private TransitionablePanel towerSelection;
     [SerializeField] private RectTransform towerTierSelection;
     [SerializeField] private ScrollRect towerSpecificSelection;
+    [SerializeField] private RectTransform towerSelectionBackButton;
     [SerializeField] private RectTransform[] tier1TowerButtonPrefabs;
     [SerializeField] private RectTransform[] tier2TowerButtonPrefabs;
     [SerializeField] private RectTransform[] tier3TowerButtonPrefabs;
@@ -200,7 +204,6 @@ public class UserInterfaceController : MonoBehaviour
     #endregion
 
     #region Button Functions
-
     /// <summary>
     /// This function is called to close all opened windows and return to the normal game state
     /// </summary>
@@ -219,7 +222,11 @@ public class UserInterfaceController : MonoBehaviour
     /// </summary>
     public void Button_TransitionTowerSelection()
     {
-        towerSelection.StartTransition();
+        if (!towerSelection.IsTransitioning)
+        {
+            towerSelection.StartTransition();
+            StartCoroutine(TowerSelectionTransitionReactor());
+        }
     }
 
     /// <summary>
@@ -302,6 +309,7 @@ public class UserInterfaceController : MonoBehaviour
         if (panel == towerPanel)
         {
             towerSelection.SetState(true);
+            towerSelectionBackButton.gameObject.SetActive(false);
         }
     }
 
@@ -341,6 +349,40 @@ public class UserInterfaceController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         waveTimer.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Waits for the transition to complete before enabling interactivity & the back button
+    /// </summary>
+    private IEnumerator TowerSelectionTransitionReactor()
+    {
+        CanvasGroup towerSpecificSelectionCanvasGroup = towerSpecificSelection.GetComponent<CanvasGroup>();
+        CanvasGroup towerTierSelectionCanvasGroup = towerTierSelection.GetComponent<CanvasGroup>();
+
+        // Wait until the transition is happening
+        yield return new WaitUntil(() => towerSelection.IsTransitioning);
+
+        // Disable the back button if we're going back to the tier selection
+        if (!towerSelection.State)
+        {
+            towerSelectionBackButton.gameObject.SetActive(false);
+        }
+
+        // Disable interactivity while transitioning
+        towerSpecificSelectionCanvasGroup.interactable = false;
+        towerTierSelectionCanvasGroup.interactable = false;
+
+        yield return new WaitUntil(() => !towerSelection.IsTransitioning);
+
+        // Enable interactivity after the transition is over
+        towerSpecificSelectionCanvasGroup.interactable = true;
+        towerTierSelectionCanvasGroup.interactable = true;
+
+        // Enable the back button if we've ended on the tower selection
+        if (!towerSelection.State)
+        {
+            towerSelectionBackButton.gameObject.SetActive(true);
+        }
     }
     #endregion
 
