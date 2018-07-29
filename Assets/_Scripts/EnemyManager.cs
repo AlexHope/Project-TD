@@ -58,7 +58,7 @@ public class EnemyManager : MonoBehaviour
     /// </summary>
     private IEnumerator WaveStarter()
     {
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(WaveTimer);
         while(Application.isPlaying)
         {
             // Update the wave information

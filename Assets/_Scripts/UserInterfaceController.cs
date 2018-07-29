@@ -24,46 +24,29 @@ public class TransitionablePanel
     [SerializeField] private float transitionTime = 1.0f;
     [SerializeField] private AnimationCurve easingCurve;
 
-    private bool isTransitioning;
     private bool finishTransition;
 
     // Accessors
+    public bool IsTransitioning { get; private set; }
     private Vector2 ScaledTravelDistance { get { return travelDistance * UserInterfaceController.Instance.OverlayCanvas.transform.localScale.x; } }
 
     /// <summary>
     /// Starts the coroutine to transition the panel
     /// </summary>
-    public void StartTransition(bool instant = false, int frameDelay = 0)
+    public void StartTransition(bool instant = false)
     {
-        UserInterfaceController.Instance.StartCoroutine(TransitionElement(instant ? 0.0f : transitionTime, frameDelay));
-    }
-
-    /// <summary>
-    /// Instantly completes the transition
-    /// </summary>
-    public void CompleteTransition()
-    {
-        if (isTransitioning)
-        {
-            finishTransition = true;
-        }
+        UserInterfaceController.Instance.StartCoroutine(TransitionElement(instant ? 0.0f : transitionTime));
     }
 
     /// <summary>
     /// Transitions a transitionable panel to the desired position over time
     /// </summary>
-    public IEnumerator TransitionElement(float time, int frameDelay = 0)
+    private IEnumerator TransitionElement(float time)
     {
-        // Wait for the specified delay
-        for (int i = 0; i < frameDelay; i++)
-        {
-            yield return new WaitForEndOfFrame();
-        }
-
         // Only allow the transition if we are not already transitioning
-        if (!isTransitioning)
+        if (!IsTransitioning)
         {
-            isTransitioning = true;
+            IsTransitioning = true;
 
             // Determine our start and end positions
             Vector2 startPosition = Panel.position;
@@ -95,7 +78,35 @@ public class TransitionablePanel
             // Update the element
             Panel.position = endPosition;
             State = !State;
-            isTransitioning = false;
+            IsTransitioning = false;
+        }
+    }
+
+    /// <summary>
+    /// Instantly completes the transition
+    /// </summary>
+    public void SetState(bool state)
+    {
+        UserInterfaceController.Instance.StartCoroutine(ForceState(state));
+    }
+
+    /// <summary>
+    /// Forces the panel to a state
+    /// </summary>
+    /// <param name="state">State to force to</param>
+    private IEnumerator ForceState(bool state)
+    {
+        // If it is transitioning, force it to complete
+        if (IsTransitioning)
+        {
+            finishTransition = true;
+            yield return new WaitForEndOfFrame();
+        }
+
+        // Once completed, force to the desired state if not already
+        if (State != state)
+        {
+            StartTransition(true);
         }
     }
 }
@@ -166,15 +177,16 @@ public class UserInterfaceController : MonoBehaviour
         EnemyManager.OnWaveEnd += EnemyManager_OnWaveEnd;
 
         // Set initial panel states
-        mainPanel.gameObject.SetActive(true);
-        statisticsPanel.gameObject.SetActive(true);
-        blurFilter.gameObject.SetActive(false);
-        towerPanel.gameObject.SetActive(false);
-        upgradesPanel.gameObject.SetActive(false);
-        otherPanel.gameObject.SetActive(false);
-        optionsPanel.gameObject.SetActive(false);
-        waveTimer.gameObject.SetActive(false);
+        ShowPanel(mainPanel);
+        ShowPanel(statisticsPanel);
+        HidePanel(blurFilter);
+        HidePanel(towerPanel);
+        HidePanel(upgradesPanel);
+        HidePanel(otherPanel);
+        HidePanel(optionsPanel);
 
+        // Show the wave timer
+        StartCoroutine(DisplayWaveTimer());
     }
 
     /// <summary>
@@ -188,22 +200,18 @@ public class UserInterfaceController : MonoBehaviour
     #endregion
 
     #region Button Functions
-    /// <summary>
-    /// Displays the specified panel
-    /// </summary>
-    /// <param name="panel">The panel to be displayed</param>
-    public void Button_DisplayPanel(RectTransform panel)
-    {
-        panel.gameObject.SetActive(true);
-    }
 
     /// <summary>
-    /// Hides the specified panel
+    /// This function is called to close all opened windows and return to the normal game state
     /// </summary>
-    /// <param name="panel">The panel to be hidden</param>
-    public void Button_HidePanel(RectTransform panel)
+    public void Button_ResetOverlay()
     {
-        panel.gameObject.SetActive(false);
+        // Disable any opened additional panels
+        HidePanel(blurFilter);
+        HidePanel(towerPanel);
+        HidePanel(upgradesPanel);
+        HidePanel(otherPanel);
+        HidePanel(optionsPanel);
     }
 
     /// <summary>
@@ -265,18 +273,38 @@ public class UserInterfaceController : MonoBehaviour
                 TowerManager.Instance.CreateTower(towerPrefab);
 
                 // Finally, hide the tower panel and turn the blur filter off
-                Button_HidePanel(towerPanel);
+                HidePanel(towerPanel);
                 ApplyBlurFilter(false);
-
-                // Reset the tower selection panel
-                towerSelection.CompleteTransition();
-                towerSelection.StartTransition(true, 1);
             });
         }
     }
     #endregion
 
     #region Functions
+    /// <summary>
+    /// Displays the specified panel
+    /// </summary>
+    /// <param name="panel">The panel to be displayed</param>
+    public void ShowPanel(RectTransform panel)
+    {
+        panel.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Hides the specified panel
+    /// </summary>
+    /// <param name="panel">The panel to be hidden</param>
+    public void HidePanel(RectTransform panel)
+    {
+        panel.gameObject.SetActive(false);
+
+        // Force the tower selection state to true
+        if (panel == towerPanel)
+        {
+            towerSelection.SetState(true);
+        }
+    }
+
     /// <summary>
     /// Applies the blur filter to the screen
     /// </summary>
