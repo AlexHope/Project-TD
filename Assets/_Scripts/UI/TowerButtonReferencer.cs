@@ -6,17 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretManager : MonoBehaviour
+/// <summary>
+/// The only use of this script is to let each tower button know which prefab it is to spawn
+/// </summary>
+public class TowerButtonReferencer : MonoBehaviour
 {
-	// Use this for initialization
-	private void Start()
-    {
-		
-	}
-	
-	// Update is called once per frame
-	private void Update()
-    {
-		
-	}
+    public GameObject TowerPrefab;
 }

@@ -7,9 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileTurret : Turret
+public class ProjectileTower : Tower
 {
-    [Header("Projectile Turret")]
+    [Header("Projectile Tower")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private float projectileDamage = 1.0f;
     [SerializeField] private float projectileSpeed = 1.0f;

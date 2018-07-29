@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50162003271480940}
   - component: {fileID: 58956713130921272}
   m_Layer: 0
-  m_Name: Projectile Turret
+  m_Name: Projectile Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,16 +89,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3efaf3b57feea14c9d857497753f65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisplayName: Projectile Turret
+  DisplayName: Projectile Tower
   Health: 100
-  turretTier: 0
+  towerTier: 0
   cost: 0
-  fireRate: 0.25
+  fireRate: 0.2
   range: 20
   maximumTargets: 2
   projectilePrefab: {fileID: 1042244471285456, guid: bd9d91a7ac78d604b99a5ec3aa4a3062,
     type: 2}
-  projectileDamage: 10
+  projectileDamage: 25
   projectileSpeed: 0.2
 --- !u!212 &212329746403688784
 SpriteRenderer:

@@ -8,17 +8,17 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public abstract class Turret : Entity
+public abstract class Tower : Entity
 {
     public enum Tier
     {
-        Tier1,
-        Tier2,
-        Tier3
+        Tier1 = 1,
+        Tier2 = 2,
+        Tier3 = 3
     }
 
-    [Header("Turret")]
-    [SerializeField] protected Tier turretTier = Tier.Tier1;
+    [Header("Tower")]
+    [SerializeField] protected Tier towerTier = Tier.Tier1;
     [SerializeField] protected float cost = 0.0f;
 
     [Header("Attack")]
@@ -46,7 +46,7 @@ public abstract class Turret : Entity
     }
 
     /// <summary>
-    /// Updates the turret attacks
+    /// Updates the tower attacks
     /// </summary>
     protected override void Update()
     {
@@ -67,7 +67,7 @@ public abstract class Turret : Entity
     }
 
     /// <summary>
-    /// Run when this turret kills a target
+    /// Run when this tower kills a target
     /// </summary>
     public void DestroyedTarget(Entity enemy)
     {
@@ -128,9 +128,9 @@ public abstract class Turret : Entity
     }
 
     /// <summary>
-    /// Finds the closest target within range of this turret
+    /// Finds the closest target within range of this tower
     /// </summary>
-    /// <returns>The closest turret</returns>
+    /// <returns>The closest tower</returns>
     private Entity FindClosestTarget()
     {
         Entity closestTarget = null;

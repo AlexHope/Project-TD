@@ -58,10 +58,10 @@ public class Projectile : MonoBehaviour
         target.Health -= BaseDamage;
         if (target.Health <= 0.0f)
         {
-            // If this projectile was fired by a turret, inform the turret they have killed their target
-            if (Owner is Turret)
+            // If this projectile was fired by a tower, inform the tower they have killed their target
+            if (Owner is Tower)
             {
-                (Owner as Turret).DestroyedTarget(target);
+                (Owner as Tower).DestroyedTarget(target);
             }
         }
     }
@@ -71,11 +71,11 @@ public class Projectile : MonoBehaviour
     /// </summary>
     private void OnDestroy()
     {
-        // If we were fired from a projectile turret, remove us from it's list of active projectiles
-        ProjectileTurret turret = Owner as ProjectileTurret;
-        if (turret && turret.ActiveProjectiles.Contains(gameObject))
+        // If we were fired from a projectile tower, remove us from it's list of active projectiles
+        ProjectileTower tower = Owner as ProjectileTower;
+        if (tower && tower.ActiveProjectiles.Contains(gameObject))
         {
-            turret.ActiveProjectiles.Remove(gameObject);
+            tower.ActiveProjectiles.Remove(gameObject);
         }
     }
 }

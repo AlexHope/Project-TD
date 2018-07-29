@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// This script will transition any panel off the screen, ensuring the button used to transition this remains on screen
 /// </summary>
-public class PanelTransitioner : MonoBehaviour
+public class OffscreenPanelTransitioner : MonoBehaviour
 {
     public enum TransitionDirection
     {
@@ -24,7 +24,6 @@ public class PanelTransitioner : MonoBehaviour
     [SerializeField] private float transitionTime = 1.0f;
     [SerializeField] private AnimationCurve easingCurve = new AnimationCurve(new Keyframe(0, 0, 0, 0), new Keyframe(1, 1, 0, 0));
 
-    private RectTransform rectTransform;
     private Vector2 distanceToScreenEdge = new Vector2();
     private bool isTransitioning = false;
     private bool state = true;
@@ -34,8 +33,6 @@ public class PanelTransitioner : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        rectTransform = GetComponent<RectTransform>();
-
         // Calculate the distance to the edge of the screen
         float scaleMultiplier = UserInterfaceController.Instance.OverlayCanvas.transform.localScale.x;
         switch (transitionDirection)
@@ -95,7 +92,7 @@ public class PanelTransitioner : MonoBehaviour
                 float progress = 0.0f;
                 while (progress < 1.0f)
                 {
-                    // Transition the turret
+                    // Transition the panel
                     transform.position = Vector2.Lerp(startPosition, endPosition, easingCurve.Evaluate(progress));
 
                     // Ensure the progress is clamped
