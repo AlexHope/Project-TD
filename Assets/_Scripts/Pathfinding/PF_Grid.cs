@@ -20,7 +20,6 @@ namespace Pathfinding
         [SerializeField] private Tilemap baseTilemap;
         [SerializeField] private LayerMask impassableLayers;
         [SerializeField] private float nodeRadius;
-        [SerializeField] private float distance;
 
         [Header("Nodes")]
         [SerializeField] private bool allowDiagonalPathing;
@@ -89,7 +88,7 @@ namespace Pathfinding
                             }
                     }
 
-                    Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - distance));
+                    Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter));
                 }
             }
         }

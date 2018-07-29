@@ -14,6 +14,9 @@ public class TowerManager : MonoBehaviour
     [SerializeField] private GameObject[] tier2TowerPrefabs;
     [SerializeField] private GameObject[] tier3TowerPrefabs;
 
+    // Accessors
+    public List<Tower> ActiveTowers { get; set; }
+
     /// <summary>
     /// Assigns the static instance
     /// </summary>

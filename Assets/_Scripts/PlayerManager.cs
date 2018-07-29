@@ -14,6 +14,7 @@ public class PlayerManager : MonoBehaviour
 
     public int CurrentGold { get; set; }
     public int CurrentHealth { get; set; }
+    public int TotalKills { get; set; }
 
     /// <summary>
     /// Assigns the static instance and sets the current health
@@ -23,16 +24,4 @@ public class PlayerManager : MonoBehaviour
         Instance = this;
         CurrentHealth = (int)playerInitialHealth;
     }
-
-    // Use this for initialization
-    private void Start()
-    {
-        
-	}
-	
-	// Update is called once per frame
-	private void Update()
-    {
-		
-	}
 }

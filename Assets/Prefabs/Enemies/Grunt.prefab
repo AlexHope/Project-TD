@@ -90,10 +90,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DisplayName: Grunt
-  Health: 100
+  Health: 200
   size: 0
-  movementSpeed: 0.1
+  movementSpeed: 0.3
   damage: 10
+  goldReward: 10
   pathCheckRate: 30
 --- !u!212 &212215784096323002
 SpriteRenderer:

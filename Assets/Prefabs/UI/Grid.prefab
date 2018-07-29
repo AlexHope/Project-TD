@@ -704,8 +704,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   nodeRadius: 0.5
-  distance: 0
-  allowDiagonalPathing: 0
+  allowDiagonalPathing: 1
   debugMode: 0
 --- !u!19719996 &2113883504925073254
 TilemapCollider2D:

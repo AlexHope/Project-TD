@@ -55,6 +55,15 @@ public abstract class Tower : Entity
     }
 
     /// <summary>
+    /// Called when the tower is destroyed
+    /// </summary>
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        PlayerManager.Instance.TotalKills += TotalKills;
+    }
+
+    /// <summary>
     /// Removes the destroyed entity from the target list if it contains it
     /// </summary>
     /// <param name="destroyedEntity">The destroyed entity</param>

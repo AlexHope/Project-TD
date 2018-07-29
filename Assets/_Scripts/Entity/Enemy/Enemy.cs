@@ -78,7 +78,7 @@ public abstract class Enemy : Entity
         if (collision.collider.transform == target.transform)
         {
             // Damage the target
-            target.Health -= damage;
+            PlayerManager.Instance.CurrentHealth -= (int)damage;
 
             // Destroy this enemy by setting its health to 0
             Health = 0.0f;

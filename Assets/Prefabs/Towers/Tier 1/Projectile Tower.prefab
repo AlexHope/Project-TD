@@ -91,7 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DisplayName: Projectile Tower
   Health: 100
-  towerTier: 0
+  towerTier: 1
   cost: 0
   fireRate: 0.2
   range: 20
@@ -99,7 +99,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 1042244471285456, guid: bd9d91a7ac78d604b99a5ec3aa4a3062,
     type: 2}
   projectileDamage: 25
-  projectileSpeed: 0.2
+  projectileSpeed: 0.4
 --- !u!212 &212329746403688784
 SpriteRenderer:
   m_ObjectHideFlags: 1

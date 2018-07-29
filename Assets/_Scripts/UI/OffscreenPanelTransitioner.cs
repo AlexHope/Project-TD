@@ -4,6 +4,7 @@ Created by Alex Hope. For use in the Project-TD app.
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// This script will transition any panel off the screen, ensuring the button used to transition this remains on screen
@@ -19,6 +20,8 @@ public class OffscreenPanelTransitioner : MonoBehaviour
     }
 
     [SerializeField] private RectTransform button;
+    [SerializeField] private Sprite activeSprite;
+    [SerializeField] private Sprite inactiveSprite;
     [SerializeField] private bool initialState;
     [SerializeField] private TransitionDirection transitionDirection;
     [SerializeField] private float transitionTime = 1.0f;
@@ -83,6 +86,9 @@ public class OffscreenPanelTransitioner : MonoBehaviour
         if (!isTransitioning)
         {
             isTransitioning = true;
+
+            // Update the sprite
+            button.GetComponent<Button>().image.sprite = state ? inactiveSprite : activeSprite;
 
             Vector2 startPosition = transform.position;
             Vector2 endPosition = startPosition + (distanceToScreenEdge * (state ? 1 : -1));
